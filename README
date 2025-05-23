@@ -1,0 +1,28 @@
+# OOP-Detector (C++ source scanner)
+
+Pequeño analizador léxico + parser de **descenso recursivo LL(1)** escrito en JavaScript
+que identifica rasgos de Programación Orientada a Objetos en archivos C++.
+
+> Devuelve una salida booleana (`true` / `false`) cuando se ejecuta como CLI  
+> y, si importas el módulo, un objeto con los indicadores detallados.
+
+---
+
+## 1. Requisitos
+
+* **Node ≥ 14** (LTS recomendado – no se usan dependencias externas).
+* Git (si vas a clonar).
+
+---
+
+## 2. Instalación
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/DavidGlezI/OOP_Compiler.git
+cd OOP_Compiler
+
+# No hay paquetes que instalar – todo es JavaScript puro
+
+Uso Rápido 
+node ParserRD.js <archivo.cpp>
