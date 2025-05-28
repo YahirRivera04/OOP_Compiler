@@ -8,7 +8,8 @@
 
 
 using namespace std;
-vector<string> tokens = {"ABRE_LLAVE", "CLASS_KW", "IDENTIFIER", "ABRE_PAR","CUERPO_CLASE","CIERRA_PAR",";","CIERRA_LLAVE","EOF"};
+vector<string> tokens = {"ABRE_LLAVE","CLASS_KW","IDENTIFIER","ABRE_LLAVE","ESPECIFICADOR_ACCESO","DOS_PUNTOS","IDENTIFIER","ABRE_PAR","CIERRA_PAR","ABRE_LLAVE",
+	"EXTRA","CIERRA_LLAVE","CIERRA_LLAVE","END","CIERRA_LLAVE","EOF"};
 
 //FIXME
 
@@ -60,15 +61,13 @@ ClaseDefinicion --> CLASS_KW IDENTIFIER [Herencia] ABRE_LLAVE CuerpoClase CIERRA
 
 	Herencia --> DOS_PUNTOS [EspecificadorAcceso] IDENTIFIER { COMA [EspecificadorAcceso] IDENTIFIER}
 
-	CuerpoClase --> ABRE_LLAVE MiembroClase CIERRA_LLAVE
-
 	Constructor --> IDENTIFIER ABRE_PAR [Parametros] CIERRA_PAR [DOS_PUNTOS InitList] CuerpoFuncion
 
 	Destructor --> SQUIRLY IDENTIFIER ABRE_PAR CIERRA_PAR CuerpoFuncion
 
 
 
-MiembroClase --> EspAcc MiembroClase | Epslyon
+CuerpoClase --> EspAcc CuerpoClase | Epslyon
 
 EspAcc --> ESPECIFICADOR_ACCESO DOS_PUNTOS MetVar | MetVar
 
@@ -86,6 +85,28 @@ string l;
 
 bool programa();
 bool declaracion();
+bool cuerpoClase();
+bool cuerpoClase1();
+bool cuerpoClase2();
+bool EspAcc();
+bool EspAcc1();
+bool EspAcc2();
+bool metvar();
+bool metvar1();
+bool metvar2();
+bool code();
+bool code1();
+bool code2();
+bool cuerpoFuncion();
+bool constructor();
+bool destructor();
+bool funcionDefinicion();
+bool miembro();
+bool classDefinicion();
+bool definicion();
+bool declaracion();
+bool declaracion1();
+bool declaracion2();
 
 void error(){
 	printf("Error\n");
@@ -100,6 +121,7 @@ bool match(string token) {
         l = tokens.front();
 		tokens.erase(tokens.begin());
 		cout << "ahora l es : "<< l << " "<<endl;
+		cout << "Size vec: " <<tokens.size()<<endl;
 		return true;
     }
     else
@@ -130,26 +152,17 @@ miembroClase --> Constructor | Destructor | Virtual | Private | Public | Protect
 
 */
 
-bool cuerpoClase(){
-	if (l == "ABRE_LLAVE"){
-		if(match("ABRE_LLAVE") && miembroClase() && match("CIERRA_LLAVE")){
-			return true;
-		}
-	}else{
-		return false;
-	}
-}
 
-bool miembroClase(){
-	if (miembroClase1() || miembroClase2()){
+bool cuerpoClase(){
+	if (cuerpoClase2() || cuerpoClase1()){
 		return true;
 	}
 	else{
 		return false;
 	}
 }
-bool miembroClase1(){
-	if(EspAcc() && miembroClase()){
+bool cuerpoClase1(){
+	if(EspAcc() && cuerpoClase()){
 			return true;
 	}
 	else{
@@ -157,8 +170,17 @@ bool miembroClase1(){
 	}
 }
 
-bool miembroClase2(){
+bool cuerpoClase2(){
+	cout <<"Aqui "<<endl;
+	//lookahead de 1 en este caso... cuerpoClase }
 	// EPSYLON HELP 
+	if (l == "CIERRA_LLAVE"){
+		
+		return true;
+	}
+	else{
+		return false;
+	}
 
 }
 
@@ -172,7 +194,12 @@ bool EspAcc(){
 }
 bool EspAcc1(){
 	if(l == "ESPECIFICADOR_ACCESO"){
-		if(match("ESPECIFICADOR_ACCESO") && match("DOS_PUNTOS") && metvar())
+		if(match("ESPECIFICADOR_ACCESO") && match("DOS_PUNTOS") && metvar()){
+			return true;
+		}
+	}
+	else{
+		return false;
 	}
 }
 
@@ -204,7 +231,52 @@ bool metvar1(){
 }
 
 bool metvar2(){
-	// EPSYLON !!
+	if (l == "CIERRA_LLAVE"){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+
+bool code(){
+	if (code1() || code2()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+bool code1(){
+	if (l == "EXTRA"){
+		if(match("EXTRA") && code())
+		{
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+bool code2(){
+	if (l == "CIERRA_LLAVE"){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool cuerpoFuncion(){
+	if(l == "ABRE_LLAVE"){
+		if (match("ABRE_LLAVE") && code() && match("CIERRA_LLAVE")){
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
 }
 
 bool constructor(){
@@ -240,41 +312,21 @@ bool funcionDefinicion(){
 	}
 }
 
-bool cuerpoFuncion(){
-	if(l == "ABRE_LLAVE"){
-		if (match("ABRE_LLAVE") && code() && match("CIERRA_LLAVE")){
-			return true;
-		}
-	}
-	else{
-		return false;
-	}
-}
-bool code(){
-	if (code1() || code2()){
+
+
+/*
+bool miembro(){
+	if (constructor() || destructor() || classFunc() || classVar()){
 		return true;
 	}
 	else{
 		return false;
 	}
 }
-bool code1(){
-	if (l == "EXTRA"){
-		if(match("EXTRA") && code())
-		{
-			return true;
-		}
-	}
-	else{
-		return false;
-	}
-}
-bool code2(){
-	// EPSYLON HELP !
-}
+*/
 
 bool miembro(){
-	if (constructor() || destructor() || classFunc() || classVar()){
+	if (constructor() || destructor()){
 		return true;
 	}
 	else{
@@ -285,12 +337,12 @@ bool miembro(){
 bool classDefinicion() {
 	
     if (l == "CLASS_KW") {
-		if(match("CLASS_KW") && match("IDENTIFIER") && match("ABRE_PAR") && cuerpoClase() && match("CIERRA_PAR") && match("END"))
+		if(match("CLASS_KW") && match("IDENTIFIER") && match("ABRE_LLAVE") && cuerpoClase() && match("CIERRA_LLAVE") && match("END"))
 			return true;
     }else{
 		return false;
 	}
-}
+}/*
 bool definicion(){
 	if (classDefinicion() || funcionDefinicion() || declaracionVarialbe() || declaracionObjeto()){
 		return true;
@@ -299,16 +351,24 @@ bool definicion(){
 		return false;
 	}
 }
-
+*/
+bool definicion(){
+	if (classDefinicion() || funcionDefinicion()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
 bool declaracion(){
-	if (declaracion1() || delcaracion2()){
+	if (declaracion1() || declaracion2()){
 		return true;
 	}else{
 		return false;
 	}
 }
 
-bool delcaracion1(){
+bool declaracion1(){
 	if(definicion() && declaracion()){
 		return true;
 	}
@@ -318,7 +378,12 @@ bool delcaracion1(){
 }
 
 bool declaracion2(){
-	// EPSYLON
+	if (l == "CIERRA_LLAVE"){
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 
 // Definition of E, as per the given production
