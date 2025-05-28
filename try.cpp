@@ -47,7 +47,7 @@ LEXER
 PARSER : 
 
 Programa --> { Declaracion } -  ABRE_PAR Declaracion CIERRA_PAR
-Declaracion --> ClaseDefinicion | FuncionDefinicion | DeclaracionVariable | DeclaracionObjeto 
+Declaracion --> ClaseDefinicion | FuncionDefinicion | DeclaracionVariable | DeclaracionObjeto | ELSE ? 
 
 DeclaracionObjeto --> Tipo IDENTIFIER [IGUAL NEW Tipo [ABRE_PAR [Argumentos] CIERRA_PAR ]] END
 
@@ -123,7 +123,7 @@ miembroClase --> Constructor | Destructor | Virtual | Private | Public | Protect
 
 bool cuerpoClase(){
 	if (l == "ABRE_LLAVE"){
-		if(match("ABRE_LLAVE") && miembroClase && match("CIERRA_LLAVE")){
+		if(match("ABRE_LLAVE") && miembroClase() && match("CIERRA_LLAVE")){
 			return true;
 		}
 	}else{
@@ -131,15 +131,185 @@ bool cuerpoClase(){
 	}
 }
 
+bool miembroClase(){
+	if (miembroClase1() || miembroClase2()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+bool miembroClase1(){
+	if(EspAcc() && miembroClase()){
+			return true;
+	}
+	else{
+		return false;
+	}
+}
 
-bool declaracion() {
+bool miembroClase2(){
+	// EPSYLON HELP 
+
+}
+
+bool EspAcc(){
+	if (EspAcc1() || EspAcc2()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+bool EspAcc1(){
+	if(l == "ESPECIFICADOR_ACCESO"){
+		if(match("ESPECIFICADOR_ACCESO") && match("DOS_PUNTOS") && metvar())
+	}
+}
+
+bool EspAcc2(){
+	if(metvar()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool metvar(){
+	if (metvar1() || metvar2()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool metvar1(){
+	if (miembro() && metvar()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool metvar2(){
+	// EPSYLON !!
+}
+
+bool constructor(){
+	if (l == "IDENTIFIER"){
+		if(match("IDENTIFIER") && match("ABRE_PAR") && match("CIERRA_PAR") && cuerpoFuncion()){
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+
+bool destructor(){
+	if(l == "SQUIGLY"){
+		if(match("SQUIGLY") && match("IDENTIFIER") && match("ABRE_PAR") && match("CIERRA_PAR") && cuerpoFuncion()){
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+
+bool funcionDefinicion(){
+	if (l == "TIPO"){
+		if(match("TIPO") && match("IDENTIFIER") && match("ABRE_PAR") && match("CIERRA_PAR") && cuerpoFuncion()){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+}
+
+bool cuerpoFuncion(){
+	if(l == "ABRE_LLAVE"){
+		if (match("ABRE_LLAVE") && code() && match("CIERRA_LLAVE")){
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+bool code(){
+	if (code1() || code2()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+bool code1(){
+	if (l == "EXTRA"){
+		if(match("EXTRA") && code())
+		{
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+bool code2(){
+	// EPSYLON HELP !
+}
+
+bool miembro(){
+	if (constructor() || destructor() || classFunc() || classVar()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool classDefinicion() {
 	
     if (l == "CLASS_KW") {
-		if(match("CLASS_KW") && match("IDENTIFIER") && match("ABRE_PAR") && match("CUERPO_CLASE") && match("CIERRA_PAR") && match(";"))
+		if(match("CLASS_KW") && match("IDENTIFIER") && match("ABRE_PAR") && cuerpoClase() && match("CIERRA_PAR") && match("END"))
 			return true;
     }else{
 		return false;
 	}
+}
+bool definicion(){
+	if (classDefinicion() || funcionDefinicion() || declaracionVarialbe() || declaracionObjeto()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool declaracion(){
+	if (declaracion1() || delcaracion2()){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool delcaracion1(){
+	if(definicion() && declaracion()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool declaracion2(){
+	// EPSYLON
 }
 
 // Definition of E, as per the given production
