@@ -47,7 +47,8 @@ LEXER
 PARSER : 
 
 Programa --> { Declaracion } -  ABRE_PAR Declaracion CIERRA_PAR
-Declaracion --> ClaseDefinicion | FuncionDefinicion | DeclaracionVariable | DeclaracionObjeto | ELSE ? 
+Declaracion -- Definicion declaracion  Epsylon
+Definicion --> ClaseDefinicion | FuncionDefinicion | DeclaracionVariable | DeclaracionObjeto | ELSE ? 
 
 DeclaracionObjeto --> Tipo IDENTIFIER [IGUAL NEW Tipo [ABRE_PAR [Argumentos] CIERRA_PAR ]] END
 
@@ -66,10 +67,19 @@ ClaseDefinicion --> CLASS_KW IDENTIFIER [Herencia] ABRE_LLAVE CuerpoClase CIERRA
 	Destructor --> SQUIRLY IDENTIFIER ABRE_PAR CIERRA_PAR CuerpoFuncion
 
 
-E --> i E'
-E' --> + i E' | e
+
+MiembroClase -- EspAcc MiembroClase Epslyon
+
+EspAcc -- ESPECIFICADOR_ACCESO DOS_PUNTOS MetVar MetVar
+
+MetVar -- Miembro MetVar Epsylon
 
 
+Miembro -- Constructor 	Destructor ClassFunc ClassVar
+
+CuerpoFuncion -- ABRE_LLAVE Code CIERRA_LLAVE
+
+Code -- EXTRA Code Epsylon
 
 ***************************/
 
