@@ -8,8 +8,8 @@
 
 
 using namespace std;
-vector<string> tokens = {"ABRE_LLAVE","CLASS_KW","IDENTIFIER","ABRE_LLAVE","ESPECIFICADOR_ACCESO","DOS_PUNTOS",
-	"TYPE", "IDENTIFIER","IGUAL","COMILLA","IDENTIFIER","COMILLA","END","TYPE","IDENTIFIER","END",
+vector<string> tokens = {"ABRE_LLAVE","EXTRA","EXTRA","CLASS_KW","IDENTIFIER","ABRE_LLAVE","ESPECIFICADOR_ACCESO","DOS_PUNTOS",
+	"TYPE", "IDENTIFIER","IGUAL","EXTRA","END","TYPE","IDENTIFIER","END",
 	"IDENTIFIER", "ABRE_PAR", "TYPE","IDENTIFIER", "CIERRA_PAR","ABRE_LLAVE","IDENTIFIER","IGUAL","IDENTIFIER","END", "CIERRA_LLAVE","CIERRA_LLAVE",
 	"END","CIERRA_LLAVE", "EOF"};
 
@@ -129,8 +129,8 @@ bool code5();
 bool args();
 bool isStartOfExpr();
 bool expr();
-
 bool funcionDefinicion();
+bool codeNonEmpty();
 
 
 
@@ -304,6 +304,13 @@ bool declaracionPostPar(){
 }
 
 bool declaracionPostPar1(){
+	if(l == "OVERRIDE_KW"){
+		match("OVERRIDE_KW"); // OPCIONAL
+	}
+	if(l == "CONST_KW"){
+		match("CONST_KW"); // OPCIONAL
+	}
+
 	if(cuerpoFuncion()){
 		return true;
 	}
@@ -334,7 +341,7 @@ bool declaracionVarInit1(){
 	if (l == "IGUAL"){
 		match("IGUAL"); // Para ver el siguiente Lookahead l
 		if(l == "NEW"){
-			if(match("NEW") && match("TYPE ") && match("ABRE_PAR")  && ( !isStartOfExpr() || args() ) && match("CIERRA_PAR") && match("END")){
+			if(match("NEW") && match("TYPE") && match("ABRE_PAR")  && ( !isStartOfExpr() || args() ) && match("CIERRA_PAR") && match("END")){
 			return true;
 			}
 		}
@@ -527,7 +534,7 @@ bool code5(){
 	}
 }
 bool code2(){
-	if (l == "CIERRA_LLAVE"){
+	if (l == "CIERRA_LLAVE"|| l == "EOF" || l == "CLASS_KW"){
 		return true;
 	}
 	else{
@@ -570,8 +577,8 @@ bool destructor(){
 }
 
 bool funcionDefinicion(){
-	if (l == "TIPO"){
-		if(match("TIPO") && match("IDENTIFIER") && match("ABRE_PAR") && ( !isStartOfParametro() || parametros() ) && match("CIERRA_PAR") && cuerpoFuncion()){
+	if (l == "TYPE"){
+		if(match("TYPE") && match("IDENTIFIER") && match("ABRE_PAR") && ( !isStartOfParametro() || parametros() ) && match("CIERRA_PAR") && cuerpoFuncion()){
 			return true;
 		}
 		else{
@@ -593,6 +600,9 @@ bool miembro(){
 */
 
 bool miembro(){
+	if (l == "VIRTUAL_KW"){
+		match("VIRTUAL_KW");
+	}
 	if (constructor() || destructor() || miembroTipo()){
 		return true;
 	}
@@ -672,15 +682,23 @@ bool definicion(){
 }
 	*/
 
+
+bool codeNonEmpty() {
+    std::size_t before = tokens.size();   // cuántos tokens había
+    if (!code()) return false;            // code falló de verdad
+
+    return tokens.size() < before;        // ← ¿consumió alguno?
+}
+
 bool definicion(){
-	if(classDefinicion() || declaracionTipo()){
+	if(classDefinicion() || declaracionTipo() || codeNonEmpty()){
 		return true;
 	}
 	else{
 		return false;
 	}
 }
-/*
+
 bool declaracion(){
 	if (declaracion1() || declaracion2()){
 		return true;
@@ -708,12 +726,24 @@ bool declaracion2(){
 }
 
 // Definition of E, as per the given production
-	*/
 
+/*
 bool programa() {
     if (l == "ABRE_LLAVE") {
 		
         if (match("ABRE_LLAVE") && definicion() && match("CIERRA_LLAVE")){
+			return true;
+		}
+    }else{
+		cout << " ERROR AQUI" << endl;
+		error();
+	}
+}
+	*/
+bool programa() {
+    if (l == "ABRE_LLAVE") {
+		
+        if (match("ABRE_LLAVE") && declaracion() && match("CIERRA_LLAVE")){
 			return true;
 		}
     }else{
@@ -728,7 +758,7 @@ int main() {
         l = tokens.front();
 		tokens.erase(tokens.begin());
 		cout << l << endl;
-		// E is a start symbol.
+		// Programa is a start symbol.
 	    programa();
 
     } while (l != "EOF");
