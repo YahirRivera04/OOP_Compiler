@@ -8,7 +8,8 @@
 
 
 using namespace std;
-vector<string> tokens = {"ABRE_LLAVE","CLASS_KW","IDENTIFIER","ABRE_LLAVE","ESPECIFICADOR_ACCESO","DOS_PUNTOS","TYPE","IDENTIFIER","END",
+vector<string> tokens = {"ABRE_LLAVE","CLASS_KW","IDENTIFIER","ABRE_LLAVE","ESPECIFICADOR_ACCESO","DOS_PUNTOS",
+	"TYPE", "IDENTIFIER","IGUAL","COMILLA","IDENTIFIER","COMILLA","END","TYPE","IDENTIFIER","END",
 	"IDENTIFIER", "ABRE_PAR", "TYPE","IDENTIFIER", "CIERRA_PAR","ABRE_LLAVE","IDENTIFIER","IGUAL","IDENTIFIER","END", "CIERRA_LLAVE","CIERRA_LLAVE",
 	"END","CIERRA_LLAVE", "EOF"};
 
@@ -331,9 +332,18 @@ bool declaracionVarInit(){
 }
 bool declaracionVarInit1(){
 	if (l == "IGUAL"){
-		if(match("IGUAL") && match("NEW") && match("TYPE ") && match("ABRE_PAR")  && ( !isStartOfExpr() || args() ) && match("CIERRA_PAR") && match("END")){
+		match("IGUAL"); // Para ver el siguiente Lookahead l
+		if(l == "NEW"){
+			if(match("NEW") && match("TYPE ") && match("ABRE_PAR")  && ( !isStartOfExpr() || args() ) && match("CIERRA_PAR") && match("END")){
 			return true;
+			}
 		}
+		else if(l == "EXTRA"){
+			if(match("EXTRA") && match("END")){
+				return true;
+			}
+		}
+		
 	}
 	else{
 		return false;
