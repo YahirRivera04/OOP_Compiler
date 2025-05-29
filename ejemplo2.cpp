@@ -1,43 +1,75 @@
-#include <iostream>
+#include <iostream> 
+EXTRA
 
 using namespace std;
 
+IDENTIFIER IDENTIFIER IDENTIFER END
+
 // Clase base
+EXTRA 
 
 
+CLASS_KW IDENTIFIER  ABRE_LLAVE
 class Animal {
 
+ESPECIFICADOR_ACCESO DOS_PUNTOS
 public:
 
+    TYPE IDENTIFIER END
     string nombre;
 
+    IDENTIFIER ABRE_PAR TYPE IDENTIFIER CIERRA_PAR ABRE_LLAVE
     Animal(string n) {
-         IGUAL IDENTIFIER END
+
+        IDENTIFIER IGUAL IDENTIFIER END   
         nombre = n;
-    }
+
+
+    }CIERRA_LLAVE
     
 
-
+    SQUIGLY IDENTIFIER ABRE_PAR CIERRA_PAR ABRE_LLAVE CIERRA_LLAVE 
     ~Animal() {}
 
-};
+}; CIERRA_LLAVE END
 
+EXTRA
 
+CLASS_KW IDENTIFIER DOS_PUNTOS ESPECIFICADOR_ACCESO IDENTIFIER ABRIR_LLAVE
 class Perro : public Animal {
 
-
+ESPECIFICADOR_ACCESO DOS_PUNTOS
 public:
-
+    IDENTIFIER ABRE_PAR TYPE IDENTIFIER CIERRA_PAR DOS_PUNTOS IDENTIFIER ABRE_PAR IDENTIFIER CIERRA_PAR ABRE_LLAVE CIERRA_LLAVE
     Perro(string n) : Animal(n) {}
+
+    TYPE IDENTIFIER ABRE_PAR CIERRA_PAR OVERRIDE_KW ABRE_LLAVE
     void hablar() override {
 
-        cout << "Guau! Soy " << nombre << endl;
-    }
-};
+        IDENTIFIER EXTRA EXTRA EXTRA IDENTIFIER EXTRA IDENTIFIER END
+        cout << "Guau! Soy " << nombre << endl; // Ver si se peude todo el print como un solo EXTRA
 
+    } CIERRA_LLAVE
+}; CIERRA_LLAVE END
+
+
+
+TYPE  IDENTIFIER ABRE_PAR CIERRA_PAR ABRIR_LLAVE
 int main() {
+
+    IDENTIFIER EXTRA IDENTIFIER IGUAL NEW IDENTIFIER ABRE_PAR EXTRA CIERRA_PAR END
     Animal* miAnimal = new Perro("Firulais");
+
+    IDENTIFIER ARROW IDENTIFIER ABRE_PAR CIERRA_PAR END
     miAnimal->hablar();
+
+    IDENTIFIER IDENTIFIER END
     delete miAnimal;
+
+    KEYWORD NUMBER END
     return 0;
-}
+} CIERRA LLAVE
+
+
+CIERRA LLAVE 
+EOF

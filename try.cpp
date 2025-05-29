@@ -28,13 +28,27 @@ using std::getline;
 using std::cout;
 using std::endl;
 
+
+struct OopMetrics {
+    bool   hasClass        = false;  // class ó struct
+    bool   hasInheritance  = false;  // ':' Base
+    bool   hasVirt         = false;  // virtual/override
+    bool   hasEncapsulation= false;  // public/private/protected
+    bool   hasDynamicAlloc = false;  // new/delete
+    bool   hasArrowCalls   = false;  //  obj->met()
+    int    numClasses      = 0;
+    int    numNew          = 0;
+    int    numDelete       = 0;
+} oop;
+
+
 vector<string> tokens;
 void handler() {
 
     string line;
     vector<string> lista;
 
-    string fileName = "ejemplo2.cpp";
+    string fileName = "ejemplo.cpp";
     Token objectT;
     ifstream file(fileName);
     if (!file.good()) {
@@ -42,12 +56,14 @@ void handler() {
         throw invalid_argument("File not found");
     }
     else {
+		tokens.push_back("ABRE_LLAVE"); // Checar 
         while(getline(file,line)) {
             vector<string> tokenTemp = objectT.tokenizer(line);
         	for (const string& token : tokenTemp) { 
                 tokens.push_back(token);
             }
         }
+		tokens.push_back("CIERRA_LLAVE"); // Checar 
 		tokens.push_back("EOF");
     }
     file.close();
@@ -91,37 +107,69 @@ LEXER
 
 PARSER : 
 
-Programa --> { Declaracion } -  ABRE_PAR Declaracion CIERRA_PAR
-Declaracion --> Definicion declaracion | Epsylon
-Definicion --> ClaseDefinicion | FuncionDefinicion | DeclaracionVariable | DeclaracionObjeto 
+GRAMATICA
 
-DeclaracionObjeto --> Tipo IDENTIFIER [IGUAL NEW Tipo [ABRE_PAR [Argumentos] CIERRA_PAR ]] END
+Programa { Declaracion  } EOF
 
-MiembroDeclaracion --> Tipo IDENTIFIER [ABRE_PAR [Parametros] CIERRA_PAR] [OVERRIDE] [CONST] [IGUAL ZERO] (END | CuerpoFuncion)
+Declaracion —> Definicion Declaracion | Epsylon 
+Definicion —> ClaseDefinicion | DeclaracionTipo | code
 
-FuncionDefinicion --> Tipo IDENTIFIER ABRE_PAR [Parametros] CIERRA_PAR CuerpoFuncion
+ClaseDefinicion —> CLASS_KW IDENTIFIER [ Herencia ] ABRE_LLAVE CuerpoClase CIERRA_LLAVE END
 
-ClaseDefinicion --> CLASS_KW IDENTIFIER [Herencia] ABRE_LLAVE CuerpoClase CIERRA_LLAVE END
+Herencia —> DOS_PUNTOS ListaHerencia 
+ListaHerencia —> HeredaUno { COMA HeredaUno } 
+HeredaUno —> ESPECIFICADOR_ACCESO IDENTIFIER
 
-	Herencia --> DOS_PUNTOS [EspecificadorAcceso] IDENTIFIER { COMA [EspecificadorAcceso] IDENTIFIER}
+FuncionDefinicion —> TIPO IDENTIFIER ABRE_PAR [ Parametros ] CIERRA_PAR Cuerpofuncion
 
-	Constructor --> IDENTIFIER ABRE_PAR [Parametros] CIERRA_PAR [DOS_PUNTOS InitList] CuerpoFuncion
-
-	Destructor --> SQUIRLY IDENTIFIER ABRE_PAR CIERRA_PAR CuerpoFuncion
-
+DeclaracionTipo —> TIPO IDENTIFIER DeclaracionTipoAlpha
 
 
-CuerpoClase --> EspAcc CuerpoClase | Epslyon
+DeclaracionTipoAlpha —> ABRE_PAR [ Parametros ] CIERRA_PAR DeclaracionPostPar | DeclaracionVarInit 
 
-EspAcc --> ESPECIFICADOR_ACCESO DOS_PUNTOS MetVar | MetVar
 
-MetVar --> Miembro MetVar | Epsylon
+DeclaracionPostPar —> CuerpoFuncion | END
 
-Miembro --> Constructor | Destructor | ClassFunc  | ClassVar
+DeclaracionVarInit —> IGUAL NEW TIPO ABRE_PAR [Args] CIERRA_PAR END | END | IGUAL (EXTRA | IDENTIFIER) END
 
-CuerpoFuncion --> ABRE_LLAVE Code CIERRA_LLAVE
 
-Code --> EXTRA Code | Epsylon
+	
+
+
+Cuerpoclase —> EspAcc CuerpoClase | Epsylon
+
+EspAcc —> ESPECIFICADOR_ACCESO DOS_PUNTOS MetVar | MetVar
+
+MetVar —>  Miembro MetVar | Epsylon 
+
+Miembro —> Constructor | Destructor | MiembroTipo
+
+
+Constructor —> IDENTIFIER ABRE_PAR [Parametros] CIERRA_PAR [ DOS_PUNTOS InitList ] CuerpoFuncion
+
+Destructor       → SQUIGLY IDENTIFIER ABRE_PAR CIERRA_PAR CuerpoFuncion
+
+MiembroTipo —> DeclaracionTipo
+
+CuerpoFuncion —> ABRE_LLAVE code CIERRA_LLAVE 
+declaracionVarSinTipo —>  IDENTIFIER IGUAL IDENTIFIER END
+
+code —> EXTRA code
+		| FuncionDefinicion code
+		| declaracionTipo code
+		| declaracionVarSinTipo code
+		| Epsylon
+
+Parametros —> Param { COMA Param } 
+Param —> TIPO IDENTIFIER 
+
+Args —> Expr { COMA Expr } 
+
+Expr —> EXTRA 
+
+InitList —> IDENTIFIER ( ABRE_PAR Args? CIERRA_PAR)
+returnStmt → KEYWORD ( NUMBER | IDENTIFIER ) END
+
 
 ***************************/
 string l;
@@ -137,6 +185,7 @@ bool heredaUno();
 bool declaracionTipoAlpha();
 bool declaracionTipoAlpha1();
 bool declaracionTipoAlpha2();
+bool callStmt();
 bool declaracionPostPar();
 bool declaracionPostPar1();
 bool declaracionPostPar2();  
@@ -161,6 +210,7 @@ bool EspAcc2();
 bool metvar();
 bool metvar1();
 bool metvar2();
+bool deleteStmt();
 bool code();
 bool code1();
 bool code2();
@@ -169,6 +219,21 @@ bool code4();
 bool code5();
 bool code6();
 bool code7();
+bool code8();
+bool endOfFunc();
+
+bool initList();
+bool initListAlpha();
+bool initItem();
+
+bool returnStmt();
+
+bool funcCode();
+bool funcCode1();
+bool funcCode2();
+bool funcCode3();
+bool funcCode4();
+
 bool args();
 bool isStartOfExpr();
 bool expr();
@@ -180,6 +245,8 @@ bool codeNonEmpty();
 bool declaracion();
 bool declaracion1();
 bool declaracion2();
+
+const std::string& la2();
 
 void error(){
 	printf("Error\n");
@@ -225,12 +292,50 @@ miembroClase --> Constructor | Destructor | Virtual | Private | Public | Protect
 
 */
 
+bool initList(){
+	cout << "entro en INITLIST" <<endl;
+	if(initItem() && initListAlpha()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
 
-inline bool isStartOfExpr() { return l == "EXTRA"; }
+
+
+bool initListAlpha() {                 // mismo InitList'
+    if (l != "COMA") return true;      // ε
+
+    match("COMA");
+	if(initItem() && initListAlpha()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+
+
+bool initItem(){
+	cout << "Entro en initITEM"<<endl;
+	if(l == "IDENTIFIER"){
+		if(match("IDENTIFIER") && match("ABRE_PAR") && ( !isStartOfExpr() || args() ) && match("CIERRA_PAR")){
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+
+inline bool isStartOfExpr() { return l == "EXTRA"|| l == "IDENTIFIER"; }
 
 bool expr() {   
-	if(l == "EXTRA"){
-		if(match("EXTRA")){
+	cout << "Entro en expr"<<endl;
+	if(l == "EXTRA" || l == "IDENTIFIER" || l == "NUMBER"){
+		if(match(l)){
 			return true;
 		}
 	}else{
@@ -238,11 +343,30 @@ bool expr() {
 	}
 }
 
+bool returnStmt()
+{
+    if (l == "RETURN_KW"){
+		match("RETURN_KW");                   // return
+		if (l == "NUMBER" || l == "IDENTIFIER"){
+			if(match(l) && match("END")){
+				return true;
+			}
+		}
+	} 
+	else{
+		return false;
+	}
+}
+
 bool args() {
-    if (!expr())                      // primer Expr obligatorio
-        return false;
+    if (!expr()){
+		cout<<"ENTRO EN NO EXPR"<<endl;
+		return false;
+	}                      // primer Expr obligatorio
+        
 
     while (l == "COMA") {             // { COMA Expr }
+		cout<<"ENTRO EN COMA"<<endl;
         match("COMA");
         if (!expr()) return false;
     }
@@ -251,7 +375,8 @@ bool args() {
 
 
 bool declaracionTipo(){
-	if (l == "TYPE"){
+	cout << "En declaracionTipo"<<endl;
+	if (l == "TYPE"){ // HERE
 		if (match("TYPE") && match("IDENTIFIER") && declaracionTipoAlpha()){
 			return true;
 		}
@@ -260,6 +385,21 @@ bool declaracionTipo(){
 		return false;
 	}
 }
+
+bool declaracionVarSinTipo(){
+	cout << "En declaracionTipo"<<endl;
+	if (l == "IDENTIFIER"){
+		if (match("IDENTIFIER") && declaracionTipoAlpha()){
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+
+/*
+
 bool declaracionVarSinTipo(){
 	if(l == "IDENTIFIER"){
 		if(match("IDENTIFIER") && match("IGUAL") && match("IDENTIFIER") && match("END")){
@@ -270,7 +410,7 @@ bool declaracionVarSinTipo(){
 		return false;
 	}
 }
-
+*/
 bool isStartOfParametro() { 
 	if (l == "TYPE"){
 		return true;
@@ -292,6 +432,7 @@ bool parametro() {
 	}
 }
 
+
 bool parametros() {
     if (!isStartOfParametro())        // ε
         return true;
@@ -307,6 +448,7 @@ bool parametros() {
 
 
 bool declaracionTipoAlpha(){
+	cout << "En declaracionTipoAlpha"<<endl;
 	if (declaracionTipoAlpha1() || declaracionTipoAlpha2()){
 		return true;
 	}
@@ -337,6 +479,7 @@ bool declaracionTipoAlpha2(){
 	}
 }
 
+
 bool declaracionPostPar(){
 	if(declaracionPostPar1() || declaracionPostPar2()){
 		return true;
@@ -349,6 +492,7 @@ bool declaracionPostPar(){
 bool declaracionPostPar1(){
 	if(l == "OVERRIDE_KW"){
 		match("OVERRIDE_KW"); // OPCIONAL
+		oop.hasVirt = true;
 	}
 	if(l == "CONST_KW"){
 		match("CONST_KW"); // OPCIONAL
@@ -372,6 +516,20 @@ bool declaracionPostPar2(){
 	}
 }
 
+bool deleteStmt() {      
+	cout<<"EN DELETE STMT" <<endl;   
+	if(l == "DELETE"){
+		if(match("DELETE") && match("IDENTIFIER") && match("END")){
+			oop.hasDynamicAlloc = true;
+			++oop.numDelete;
+			return true;
+		}
+	}          // DELETE IDENTIFIER ;
+	else{
+		return false;
+	}
+}
+
 bool declaracionVarInit(){
 	if(declaracionVarInit1() || declaracionVarInit2()){
 		return true;
@@ -384,12 +542,18 @@ bool declaracionVarInit1(){
 	if (l == "IGUAL"){
 		match("IGUAL"); // Para ver el siguiente Lookahead l
 		if(l == "NEW"){
-			if(match("NEW") && match("TYPE") && match("ABRE_PAR")  && ( !isStartOfExpr() || args() ) && match("CIERRA_PAR") && match("END")){
-			return true;
+			match("NEW");
+			if(l == "TYPE" || l == "IDENTIFIER"){
+				if(match(l) && match("ABRE_PAR")  && ( !isStartOfExpr() || args() ) && match("CIERRA_PAR") && match("END")){
+					oop.hasDynamicAlloc = true;
+					++oop.numNew;
+					return true;
+				}
 			}
 		}
-		else if(l == "EXTRA"){
-			if(match("EXTRA") && match("END")){
+		else if(l == "EXTRA" || l == "IDENTIFIER"){
+			cout << "Entro VAR INIT DE EXTRA IDENTIFIER" << endl;
+			if(match(l) && match("END")){
 				return true;
 			}
 		}
@@ -399,6 +563,7 @@ bool declaracionVarInit1(){
 		return false;
 	}
 }
+
 
 bool declaracionVarInit2(){
 	if (l == "END"){
@@ -485,6 +650,7 @@ bool EspAcc(){
 bool EspAcc1(){
 	if(l == "ESPECIFICADOR_ACCESO"){
 		if(match("ESPECIFICADOR_ACCESO") && match("DOS_PUNTOS") && metvar()){
+			oop.hasEncapsulation = true;
 			return true;
 		}
 	}
@@ -532,7 +698,7 @@ bool metvar2(){
 
 
 bool code(){
-	if (code1() || code3() || code4() || code5() || code6() ||code7() ||code2()){
+	if (code1() || code3() || code4() ||code7() ||code6() ||code2()){
 		return true;
 	}
 	else{
@@ -575,6 +741,7 @@ bool code1(){
 	}
 }
 bool code3(){
+	cout<< "ENTRO CODE3"<< endl;
 	if(declaracionTipo() && code()){
 		return true;
 	}
@@ -582,6 +749,7 @@ bool code3(){
 		return false;
 	}
 }
+
 
 bool code4(){
 	if(funcionDefinicion() && code()){
@@ -592,14 +760,6 @@ bool code4(){
 	}
 }
 
-bool code5(){
-	if(declaracionVarSinTipo() && code()){
-		return true;
-	}
-	else{
-		return false;
-	}
-}
 bool code2(){
 	if (l == "CIERRA_LLAVE"|| l == "EOF" || l == "CLASS_KW"){
 		return true;
@@ -608,11 +768,60 @@ bool code2(){
 		return false;
 	}
 }
-	
 
-bool cuerpoFuncion(){
-	if(l == "ABRE_LLAVE"){
-		if (match("ABRE_LLAVE") && code() && match("CIERRA_LLAVE")){
+inline bool isCallStmt() {
+    return l == "IDENTIFIER" && tokens.size() > 0 && tokens[0] == "ARROW";
+}
+
+bool callStmt() {    
+	if(isCallStmt()){
+		if(match("IDENTIFIER")
+         && match("ARROW")
+         && match("IDENTIFIER")
+         && match("ABRE_PAR")
+         && ( !isStartOfExpr() || args() )   // [Args] opcional
+         && match("CIERRA_PAR")
+         && match("END")){
+			oop.hasArrowCalls = true;
+			return true;
+		 }
+	}                  // IDENTIFIER -> IDENTIFIER ( ) ;
+	else{
+		return false;
+	}
+}
+
+/*
+bool funcCode(){
+	if (callStmt() ||deleteStmt() || funcCode4() || funcCode1() || funcCode2() || funcCode3()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+	*/
+
+bool funcCode() {                        // Secuencia de sentencias
+    if (endOfFunc()) return true;        // ε  ← sale sin recursión
+
+    // Una sentencia obligatoria
+    if (   returnStmt()
+		|| callStmt()
+        || deleteStmt()
+        || funcCode4()      // var-sin-tipo
+        || funcCode1()      // declaracionTipo
+        || funcCode2() )    // EXTRA
+    {
+        return funcCode();              // ◄── recursión UNA sola vez
+    }
+    return false;                       // error de sintaxis
+}
+
+bool funcCode2(){
+	if (l == "EXTRA"){
+		if(match("EXTRA") && funcCode())
+		{
 			return true;
 		}
 	}
@@ -620,10 +829,50 @@ bool cuerpoFuncion(){
 		return false;
 	}
 }
+bool funcCode1(){
+	if(declaracionTipo() && funcCode()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
 
+bool endOfFunc() {                       // FIRST(ε)
+    return l == "CIERRA_LLAVE"
+        || l == "EOF"
+        || l == "CLASS_KW";
+}
+
+
+bool funcCode4(){
+	if (declaracionVarSinTipo() && funcCode()){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+
+
+
+bool cuerpoFuncion(){
+	cout << "Entro en CuerpoFuncion" << endl;
+	if(l == "ABRE_LLAVE"){
+		if (match("ABRE_LLAVE") && funcCode() && match("CIERRA_LLAVE")){
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+inline bool isStartOfInitList() { return l == "DOS_PUNTOS"; }
 bool constructor(){
 	if (l == "IDENTIFIER"){
-		if(match("IDENTIFIER") && match("ABRE_PAR") && ( !isStartOfParametro() || parametros() ) && match("CIERRA_PAR") && cuerpoFuncion()){
+		cout << "Entro en contructor" << endl;
+		if(match("IDENTIFIER") && match("ABRE_PAR") && ( !isStartOfParametro() || parametros() ) && match("CIERRA_PAR") && ( !isStartOfInitList() || ( match("DOS_PUNTOS") && initList() ) ) && cuerpoFuncion()){   // ← aquí el opcional
 			return true;
 		}
 	}
@@ -693,6 +942,7 @@ inline bool isStartOfHerencia() {          // FIRST(Herencia)
 bool herencia() {
 	if ( l == "DOS_PUNTOS"){
 		if(match("DOS_PUNTOS") && listaHerencia()){
+			oop.hasInheritance = true;
 			return true;
 		}
 	}
@@ -725,7 +975,11 @@ bool classDefinicion() {
 	
     if (l == "CLASS_KW") {
 		if(match("CLASS_KW") && match("IDENTIFIER") && (!isStartOfHerencia() || herencia()) && match("ABRE_LLAVE") && cuerpoClase() && match("CIERRA_LLAVE") && match("END"))
+		{
+			oop.hasClass = true;
+        	++oop.numClasses;
 			return true;
+		}
     }else{
 		return false;
 	}
@@ -821,10 +1075,11 @@ bool programa() {
 
 int main() {
 	handler();
+	
 	for (size_t i = 0; i < tokens.size(); ++i) {
         std::cout << tokens[i] << '\n';
     }
-	/*
+		
     do {
         l = tokens.front();
 		tokens.erase(tokens.begin());
@@ -834,8 +1089,26 @@ int main() {
 
     } while (l != "EOF");
 
-    if (l == "EOF")
-        printf("Parsing Successful\n");
-		*/
+    if (l == "EOF"){
+		printf("Parsing Successful\n");
+		cout<<endl;
+		cout<<endl;
+		cout << "\n--- Rasgos POO detectados ---\n";
+		cout << "Clases:           " << oop.numClasses      << '\n';
+		cout << "Herencia:         " << (oop.hasInheritance ? "sí" : "no") << '\n';
+		cout << "Encapsulación:    " << (oop.hasEncapsulation ? "sí" : "no") << '\n';
+		cout << "Polimorfismo:     " << (oop.hasVirt ? "sí" : "no") << '\n';
+		cout << "new/delete usados: " << (oop.hasDynamicAlloc ? "sí" : "no") 
+                              << "  (new="<<oop.numNew<<" delete="<<oop.numDelete<<")\n";
+		cout << "obj->met() calls: " << (oop.hasArrowCalls ? "sí" : "no") << '\n';
+
+		cout<<endl;
+		cout<<endl;
+
+		bool esOOP = oop.hasClass &&(oop.hasInheritance || oop.hasVirt || oop.hasEncapsulation);
+		cout << "\n¿El fichero es POO?  " << (esOOP ? "✓ Sí" : "✗ No") << '\n';
+		
+	}
+        
 	return 0;
 }
