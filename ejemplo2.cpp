@@ -1,0 +1,43 @@
+#include <iostream>
+
+using namespace std;
+
+// Clase base
+
+
+class Animal {
+
+public:
+
+    string nombre;
+
+    Animal(string n) {
+         IGUAL IDENTIFIER END
+        nombre = n;
+    }
+    
+
+
+    ~Animal() {}
+
+};
+
+
+class Perro : public Animal {
+
+
+public:
+
+    Perro(string n) : Animal(n) {}
+    void hablar() override {
+
+        cout << "Guau! Soy " << nombre << endl;
+    }
+};
+
+int main() {
+    Animal* miAnimal = new Perro("Firulais");
+    miAnimal->hablar();
+    delete miAnimal;
+    return 0;
+}

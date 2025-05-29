@@ -8,10 +8,52 @@
 
 
 using namespace std;
+
+
+/*
 vector<string> tokens = {"ABRE_LLAVE","EXTRA","EXTRA","CLASS_KW","IDENTIFIER","ABRE_LLAVE","ESPECIFICADOR_ACCESO","DOS_PUNTOS",
 	"TYPE", "IDENTIFIER","IGUAL","EXTRA","END","TYPE","IDENTIFIER","END",
 	"IDENTIFIER", "ABRE_PAR", "TYPE","IDENTIFIER", "CIERRA_PAR","ABRE_LLAVE","IDENTIFIER","IGUAL","IDENTIFIER","END", "CIERRA_LLAVE","CIERRA_LLAVE",
 	"END","CIERRA_LLAVE", "EOF"};
+
+*/
+
+
+#include <fstream>
+#include "token.h"
+
+using std::ifstream;
+using std::invalid_argument;
+using std::getline;
+using std::cout;
+using std::endl;
+
+vector<string> tokens;
+void handler() {
+
+    string line;
+    vector<string> lista;
+
+    string fileName = "ejemplo2.cpp";
+    Token objectT;
+    ifstream file(fileName);
+    if (!file.good()) {
+        file.close();
+        throw invalid_argument("File not found");
+    }
+    else {
+        while(getline(file,line)) {
+            vector<string> tokenTemp = objectT.tokenizer(line);
+        	for (const string& token : tokenTemp) { 
+                tokens.push_back(token);
+            }
+        }
+		tokens.push_back("EOF");
+    }
+    file.close();
+}
+
+
 
 //FIXME
 
@@ -82,7 +124,6 @@ CuerpoFuncion --> ABRE_LLAVE Code CIERRA_LLAVE
 Code --> EXTRA Code | Epsylon
 
 ***************************/
-
 string l;
 
 bool programa();
@@ -126,6 +167,8 @@ bool code2();
 bool code3();
 bool code4();
 bool code5();
+bool code6();
+bool code7();
 bool args();
 bool isStartOfExpr();
 bool expr();
@@ -489,13 +532,37 @@ bool metvar2(){
 
 
 bool code(){
-	if (code1() || code3() || code4() || code5() ||code2()){
+	if (code1() || code3() || code4() || code5() || code6() ||code7() ||code2()){
 		return true;
 	}
 	else{
 		return false;
 	}
 }
+bool code6(){
+	if (l == "END"){
+		if(match("END") && code())
+		{
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+
+bool code7(){
+	if (l == "IDENTIFIER"){
+		if(match("IDENTIFIER") && code())
+		{
+			return true;
+		}
+	}
+	else{
+		return false;
+	}
+}
+
 bool code1(){
 	if (l == "EXTRA"){
 		if(match("EXTRA") && code())
@@ -753,7 +820,11 @@ bool programa() {
 }
 
 int main() {
-	
+	handler();
+	for (size_t i = 0; i < tokens.size(); ++i) {
+        std::cout << tokens[i] << '\n';
+    }
+	/*
     do {
         l = tokens.front();
 		tokens.erase(tokens.begin());
@@ -765,4 +836,6 @@ int main() {
 
     if (l == "EOF")
         printf("Parsing Successful\n");
+		*/
+	return 0;
 }
