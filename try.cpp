@@ -120,9 +120,9 @@ Herencia —> DOS_PUNTOS ListaHerencia
 ListaHerencia —> HeredaUno { COMA HeredaUno } 
 HeredaUno —> ESPECIFICADOR_ACCESO IDENTIFIER
 
-FuncionDefinicion —> TIPO IDENTIFIER ABRE_PAR [ Parametros ] CIERRA_PAR Cuerpofuncion
+FuncionDefinicion —> TYPE IDENTIFIER ABRE_PAR [ Parametros ] CIERRA_PAR Cuerpofuncion
 
-DeclaracionTipo —> TIPO IDENTIFIER DeclaracionTipoAlpha
+DeclaracionTipo —> TYPE IDENTIFIER DeclaracionTipoAlpha
 
 
 DeclaracionTipoAlpha —> ABRE_PAR [ Parametros ] CIERRA_PAR DeclaracionPostPar | DeclaracionVarInit 
@@ -130,11 +130,16 @@ DeclaracionTipoAlpha —> ABRE_PAR [ Parametros ] CIERRA_PAR DeclaracionPostPar 
 
 DeclaracionPostPar —> CuerpoFuncion | END
 
-DeclaracionVarInit —> IGUAL NEW TIPO ABRE_PAR [Args] CIERRA_PAR END | END | IGUAL (EXTRA | IDENTIFIER) END
+DeclaracionVarInit —> IGUAL NEW TYPE ABRE_PAR [Args] CIERRA_PAR END | END | IGUAL (EXTRA | IDENTIFIER) END
 
 
 	
-
+FuncCode --> ReturnStmt
+            | CallStmt
+            | DeleteStmt
+            | DeclaracionVarSinTipo
+            | DeclaracionTipo
+            | EXTRA 
 
 Cuerpoclase —> EspAcc CuerpoClase | Epsylon
 
@@ -151,8 +156,10 @@ Destructor       → SQUIGLY IDENTIFIER ABRE_PAR CIERRA_PAR CuerpoFuncion
 
 MiembroTipo —> DeclaracionTipo
 
-CuerpoFuncion —> ABRE_LLAVE code CIERRA_LLAVE 
-declaracionVarSinTipo —>  IDENTIFIER IGUAL IDENTIFIER END
+CuerpoFuncion —> ABRE_LLAVE FuncCode CIERRA_LLAVE 
+declaracionVarSinTipo —>  IDENTIFIER DelcaracionTipoAlpha
+
+
 
 code —> EXTRA code
 		| FuncionDefinicion code
@@ -165,10 +172,14 @@ Param —> TIPO IDENTIFIER
 
 Args —> Expr { COMA Expr } 
 
-Expr —> EXTRA 
+Expr —> EXTRA | IDENTIFIER | NUMBER
 
-InitList —> IDENTIFIER ( ABRE_PAR Args? CIERRA_PAR)
-returnStmt → KEYWORD ( NUMBER | IDENTIFIER ) END
+
+CallStmt --> IDENTIFIER ARROW IDENTIFIER ABRE_PAR  [ Args ]  CIERRA_PAR  END
+InitList —> IDENTIFIER ( ABRE_PAR Args CIERRA_PAR)
+DeleteStmt —> DELETE IDENTIFIER END
+returnStmt → RETURN_KW ( NUMBER | IDENTIFIER ) END
+
 
 
 ***************************/
@@ -269,28 +280,7 @@ bool match(string token) {
 		error();
 }
 
-/*
-// Definition of E' as per the given production
-bool E_alpha(){
-	if(E_alpha_1() || E_alpha_2()){
-		return true;
-	}else{
-		error();
-	}
-}
-*/
-// Definition of E_2' as per the given production
 
-//  {"ABRE_LLAVE", "CLASS_KW", "IDENTIFIER", "ABRE_PAR","CUERPO_CLASE","CIERRA_PAR",";","CIERRA_LLAVE","EOF"};
-
-
-// CLASEEEEEEEEEEEEE
-
-/*
-
-miembroClase --> Constructor | Destructor | Virtual | Private | Public | Protected | 
-
-*/
 
 bool initList(){
 	cout << "entro en INITLIST" <<endl;
