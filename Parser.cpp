@@ -883,6 +883,7 @@ int main(int argc, char* argv[]) {
 	for (const std::string& s : tokens) {
         std::cout << s << '\n';
     }
+    
 	do {
         l = tokens.front();
 		tokens.erase(tokens.begin());
