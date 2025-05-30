@@ -616,10 +616,13 @@ bool code4(){
 }
 
 bool code2(){
-	if (l == "CIERRA_LLAVE" || l == "CLASS_KW"){
-		match(l);   
+	if (l == "CIERRA_LLAVE"){
+		match("CIERRA_LLAVE");   
 		return true;
 	}
+	if (l == "CLASS_KW") {
+        return true;          // ← sin  match()
+    }
 	else{
 		return false;
 	}
@@ -874,19 +877,12 @@ bool programa() {
 	}
 }
 
-<<<<<<< HEAD
 int main(int argc, char* argv[]) {
 	
 	handler(argv);
-=======
-int main() {
-	handler();
-
 	for (const std::string& s : tokens) {
         std::cout << s << '\n';
     }
->>>>>>> be47681 (Changes)
-	
     do {
         l = tokens.front();
 		tokens.erase(tokens.begin());
