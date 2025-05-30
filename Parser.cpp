@@ -26,11 +26,11 @@ static string la;
 [[noreturn]] void syntaxError(const string& expected,
                               const string& rule = "")
 {
-    cerr << "\n┌─[ ERROR de sintaxis ]─────────────────────────────\n";
+    cerr << "\n┌─[ Syntax ERROR ]─────────────────────────────\n";
     if (!rule.empty())
-        cerr << "│  en regla: " << rule << "\n";
-    	cerr << "│  se esperaba: "   << expected
-         	<< "\n│  pero llegó:    " << la << '\n'
+        cerr << "│  On the rule: " << rule << "\n";
+    	cerr << "│  Expected: "   << expected
+         	<< "\n│  But got:    " << la << '\n'
          	<< "└────────────────────────────────────────────────────\n";
     exit(EXIT_FAILURE);
 }
@@ -54,7 +54,7 @@ void handler() {
     string line;
     vector<string> lista;
 
-    string fileName = "procedural.cpp";
+    string fileName = "ejemplo.cpp";
     Token objectT;
     ifstream file(fileName);
     if (!file.good()) {
@@ -152,10 +152,6 @@ bool declaracion2();
 
 const std::string& la2();
 
-void error(){
-	printf("Error\n");
-	exit(-1);
-}
 
 
 // Match function
@@ -173,7 +169,6 @@ bool match(const string& token, const string& rule = "") {
 
 
 bool initList(){
-	cout << "entro en INITLIST" <<endl;
 	if(initItem() && initListAlpha()){
 		return true;
 	}
@@ -198,7 +193,6 @@ bool initListAlpha() {                 // mismo InitList'
 
 
 bool initItem(){
-	cout << "Entro en initITEM"<<endl;
 	if(l == "IDENTIFIER"){
 		if(match("IDENTIFIER") && match("ABRE_PAR") && ( !isStartOfExpr() || args() ) && match("CIERRA_PAR")){
 			return true;
@@ -212,7 +206,6 @@ bool initItem(){
 inline bool isStartOfExpr() { return l == "EXTRA"|| l == "IDENTIFIER"; }
 
 bool expr() {   
-	cout << "Entro en expr"<<endl;
 	if(l == "EXTRA" || l == "IDENTIFIER" || l == "NUMBER"){
 		if(match(l)){
 			return true;
@@ -251,13 +244,11 @@ bool skipStmt() {
 
 bool args() {
     if (!expr()){
-		cout<<"ENTRO EN NO EXPR"<<endl;
 		return false;
 	}                      
         
 
     while (l == "COMA") {             // { COMA Expr }
-		cout<<"ENTRO EN COMA"<<endl;
         match("COMA");
         if (!expr()) return false;
     }
@@ -266,7 +257,6 @@ bool args() {
 
 
 bool declaracionTipo(){
-	cout << "En declaracionTipo"<<endl;
 	if (l == "TYPE"){ 
 		if (match("TYPE") && match("IDENTIFIER") && declaracionTipoAlpha()){
 			return true;
@@ -278,7 +268,6 @@ bool declaracionTipo(){
 }
 
 bool declaracionVarSinTipo(){
-	cout << "En declaracionTipo"<<endl;
 	if (l == "IDENTIFIER"){
 		if (match("IDENTIFIER") && declaracionTipoAlpha()){
 			return true;
@@ -326,7 +315,6 @@ bool parametros() {
 
 
 bool declaracionTipoAlpha(){
-	cout << "En declaracionTipoAlpha"<<endl;
 	if (declaracionTipoAlpha1() || declaracionTipoAlpha2()){
 		return true;
 	}
@@ -395,7 +383,6 @@ bool declaracionPostPar2(){
 }
 
 bool deleteStmt() {      
-	cout<<"EN DELETE STMT" <<endl;   
 	if(l == "DELETE"){
 		if(match("DELETE") && match("IDENTIFIER") && match("END")){
 			oop.hasDynamicAlloc = true;
@@ -503,7 +490,6 @@ bool cuerpoClase1(){
 }
 
 bool cuerpoClase2(){
-	cout <<"Aqui "<<endl;
 	//lookahead de 1 en este caso... cuerpoClase }
 	if (l == "CIERRA_LLAVE"){
 		
@@ -617,7 +603,6 @@ bool code1(){
 	}
 }
 bool code3(){
-	cout<< "ENTRO CODE3"<< endl;
 	if(declaracionTipo() && code()){
 		return true;
 	}
@@ -727,7 +712,6 @@ bool funcCode4(){
 
 
 bool cuerpoFuncion(){
-	cout << "Entro en CuerpoFuncion" << endl;
 	if(l == "ABRE_LLAVE"){
 		if (match("ABRE_LLAVE") && funcCode() && match("CIERRA_LLAVE")){
 			return true;
@@ -740,7 +724,6 @@ bool cuerpoFuncion(){
 inline bool isStartOfInitList() { return l == "DOS_PUNTOS"; }
 bool constructor(){
 	if (l == "IDENTIFIER"){
-		cout << "Entro en contructor" << endl;
 		if(match("IDENTIFIER") && match("ABRE_PAR") && ( !isStartOfParametro() || parametros() ) && match("CIERRA_PAR") && ( !isStartOfInitList() || ( match("DOS_PUNTOS") && initList() ) ) && cuerpoFuncion()){   // ← aquí el opcional
 			return true;
 		}
@@ -891,22 +874,16 @@ bool programa() {
 			return true;
 		}
     }else{
-		cout << " ERROR AQUI" << endl;
-		error();
+		false;
 	}
 }
 
 int main() {
 	handler();
 	
-	for (size_t i = 0; i < tokens.size(); ++i) {
-        std::cout << tokens[i] << '\n';
-    }
-		
     do {
         l = tokens.front();
 		tokens.erase(tokens.begin());
-		cout << l << endl;
 		// Programa is a start symbol.
 	    programa();
 
@@ -916,20 +893,20 @@ int main() {
 		printf("Parsing Successful\n");
 		cout<<endl;
 		cout<<endl;
-		cout << "\n--- Rasgos POO detectados ---\n";
-		cout << "Clases:           " << oop.numClasses      << '\n';
-		cout << "Herencia:         " << (oop.hasInheritance ? "sí" : "no") << '\n';
-		cout << "Encapsulación:    " << (oop.hasEncapsulation ? "sí" : "no") << '\n';
-		cout << "Polimorfismo:     " << (oop.hasVirt ? "sí" : "no") << '\n';
-		cout << "new/delete usados: " << (oop.hasDynamicAlloc ? "sí" : "no") 
+		cout << "\n--- OOP Features ---\n";
+		cout << "Classes:           " << oop.numClasses      << '\n';
+		cout << "Inheritance:         " << (oop.hasInheritance ? "yes" : "no") << '\n';
+		cout << "Encapsulation:    " << (oop.hasEncapsulation ? "yes" : "no") << '\n';
+		cout << "Polimorfism:     " << (oop.hasVirt ? "yes" : "no") << '\n';
+		cout << "new/delete usados: " << (oop.hasDynamicAlloc ? "yes" : "no") 
                               << "  (new="<<oop.numNew<<" delete="<<oop.numDelete<<")\n";
-		cout << "obj->met() calls: " << (oop.hasArrowCalls ? "sí" : "no") << '\n';
+		cout << "obj->met() calls: " << (oop.hasArrowCalls ? "yes" : "no") << '\n';
 
 		cout<<endl;
 		cout<<endl;
 
 		bool esOOP = oop.hasClass &&(oop.hasInheritance || oop.hasVirt || oop.hasEncapsulation);
-		cout << "\n¿El fichero es POO?  " << (esOOP ? "✓ Sí" : "✗ No") << '\n';
+		cout << "\n¿Is the file OOP?  " << (esOOP ? "✓ YES" : "✗ NO") << '\n';
 		
 	}
         
