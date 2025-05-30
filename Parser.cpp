@@ -160,8 +160,10 @@ void error(){
 // Match function
 bool match(const string& token, const string& rule = "") {
     if (l == token) {
+		cout << "l is :" << l <<endl;
         l = tokens.front();
 		tokens.erase(tokens.begin());
+		cout << "It matched - l now is: "<<l <<endl;
 		return true;
     }
     else{
