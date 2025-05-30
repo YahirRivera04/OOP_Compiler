@@ -12,7 +12,7 @@ public:
     string nombre;
 
 
-    Animal(string n) {
+    Animal(string ) {
 
         nombre = n;
     }
