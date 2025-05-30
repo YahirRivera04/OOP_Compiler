@@ -880,11 +880,9 @@ bool programa() {
 int main(int argc, char* argv[]) {
 	
 	handler(argv);
-
 	for (const std::string& s : tokens) {
         std::cout << s << '\n';
     }
-    
 	do {
         l = tokens.front();
 		tokens.erase(tokens.begin());
