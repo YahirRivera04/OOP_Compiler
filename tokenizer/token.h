@@ -14,6 +14,7 @@ using std::regex;
 using std::isspace;
 using std::smatch;
 using std::regex_search;
+using std::string;
 
 
 class Token {

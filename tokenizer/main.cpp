@@ -24,15 +24,27 @@ using std::getline;
 using std::cout;
 using std::endl;
 
-int main() {
+int main(int argc, char* argv[]) {
 
     string line;
     vector<string> lista;
 
-    string fileName = "ejemplo2.cpp";
+    //string fileName = "ejemplo2.cpp";
     Token objectT;
+
+    if (argc < 2) {
+        std::cerr << "Usage: lexer <filename>\n";
+        return 1;
+    }
+
+    std::ifstream file(argv[1]);
+    if (!file) {
+        std::cerr << "Could not open file: " << argv[1] << "\n";
+        return 1;
+    }
     
-    ifstream file(fileName);
+    std::ifstream file(argv[1]);
+
     if (!file.good()) {
         file.close();
         throw invalid_argument("File not found");

@@ -1,25 +1,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-
 #include <string>
 #include <vector>
 #include <iostream>
-
+#include <fstream>
+#include "tokenizer/token.h"
 
 using namespace std;
 vector<string> tokens;
 string l;
-
-
-#include <fstream>
-#include "token.h"
-
-using std::ifstream;
-using std::invalid_argument;
-using std::getline;
-using std::cout;
-using std::endl;
 
 static string la;  
 
@@ -49,14 +39,20 @@ struct OopMetrics {
 
 
 
-void handler() {
+void handler(char* argv[]) {
 
+    std::ifstream file(argv[1]);
+    //string fileName = "procedural.cpp";
     string line;
     vector<string> lista;
 
+<<<<<<< HEAD
+=======
     string fileName = "ejemplo.cpp";
+>>>>>>> f8ccf8a714a3ce99dc816003a5c0f54bb622f3e9
     Token objectT;
-    ifstream file(fileName);
+    //ifstream file(fileName);
+
     if (!file.good()) {
         file.close();
         throw invalid_argument("File not found");
@@ -152,6 +148,13 @@ bool declaracion2();
 
 const std::string& la2();
 
+<<<<<<< HEAD
+void error(){
+	cout << "Error" << endl;
+	exit(-1);
+}
+=======
+>>>>>>> f8ccf8a714a3ce99dc816003a5c0f54bb622f3e9
 
 
 // Match function
@@ -880,8 +883,9 @@ bool programa() {
 	}
 }
 
-int main() {
-	handler();
+int main(int argc, char* argv[]) {
+	
+	handler(argv);
 	
     do {
         l = tokens.front();
@@ -892,7 +896,7 @@ int main() {
     } while (l != "EOF");
 
     if (l == "EOF"){
-		printf("Parsing Successful\n");
+		cout << "Parsing Successful" << endl;
 		cout<<endl;
 		cout<<endl;
 		cout << "\n--- OOP Features ---\n";
