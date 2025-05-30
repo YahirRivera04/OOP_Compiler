@@ -1,25 +1,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-
 #include <string>
 #include <vector>
 #include <iostream>
-
+#include <fstream>
+#include "tokenizer/token.h"
 
 using namespace std;
 vector<string> tokens;
 string l;
-
-
-#include <fstream>
-#include "token.h"
-
-using std::ifstream;
-using std::invalid_argument;
-using std::getline;
-using std::cout;
-using std::endl;
 
 static string la;  
 
@@ -49,14 +39,16 @@ struct OopMetrics {
 
 
 
-void handler() {
+void handler(char* argv[]) {
 
+    std::ifstream file(argv[1]);
+    //string fileName = "procedural.cpp";
     string line;
     vector<string> lista;
 
-    string fileName = "procedural.cpp";
     Token objectT;
-    ifstream file(fileName);
+    //ifstream file(fileName);
+
     if (!file.good()) {
         file.close();
         throw invalid_argument("File not found");
@@ -153,7 +145,7 @@ bool declaracion2();
 const std::string& la2();
 
 void error(){
-	printf("Error\n");
+	cout << "Error" << endl;
 	exit(-1);
 }
 
@@ -896,8 +888,9 @@ bool programa() {
 	}
 }
 
-int main() {
-	handler();
+int main(int argc, char* argv[]) {
+	
+	handler(argv);
 	
 	for (size_t i = 0; i < tokens.size(); ++i) {
         std::cout << tokens[i] << '\n';
@@ -913,7 +906,7 @@ int main() {
     } while (l != "EOF");
 
     if (l == "EOF"){
-		printf("Parsing Successful\n");
+		cout << "Parsing Successful" << endl;
 		cout<<endl;
 		cout<<endl;
 		cout << "\n--- Rasgos POO detectados ---\n";

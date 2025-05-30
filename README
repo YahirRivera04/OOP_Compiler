@@ -3,8 +3,6 @@
 Pequeño analizador léxico + parser de **descenso recursivo LL(1)** escrito en C++
 que identifica rasgos de Programación Orientada a Objetos en archivos C++.
 
-
 ---
-
-
  g++ -std=c++17 -g -o main token.cpp try.cpp
+./main.exe
