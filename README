@@ -1,6 +1,6 @@
 # OOP-Detector (C++ source scanner)
 
-Pequeño analizador léxico + parser de **descenso recursivo LL(1)** escrito en C++
+Pequeño analizador léxico + parser de **descenso recursivo** escrito en C++
 que identifica rasgos de Programación Orientada a Objetos en archivos C++.
 
 ---

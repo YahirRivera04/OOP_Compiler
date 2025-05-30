@@ -543,7 +543,7 @@ bool metvar1(){
 }
 
 bool metvar2(){
-	if (l == "CIERRA_LLAVE"){
+	if (l == "CIERRA_LLAVE"|| l == "ESPECIFICADOR_ACCESO"){
 		return true;
 	}
 	else{
@@ -616,7 +616,8 @@ bool code4(){
 }
 
 bool code2(){
-	if (l == "CIERRA_LLAVE"|| l == "EOF" || l == "CLASS_KW"){
+	if (l == "CIERRA_LLAVE" || l == "CLASS_KW"){
+		match(l);   
 		return true;
 	}
 	else{
@@ -752,6 +753,7 @@ bool funcionDefinicion(){
 bool miembro(){
 	if (l == "VIRTUAL_KW"){
 		match("VIRTUAL_KW");
+		oop.hasVirt = true;
 	}
 	if (constructor() || destructor() || miembroTipo()){
 		return true;
@@ -872,9 +874,18 @@ bool programa() {
 	}
 }
 
+<<<<<<< HEAD
 int main(int argc, char* argv[]) {
 	
 	handler(argv);
+=======
+int main() {
+	handler();
+
+	for (const std::string& s : tokens) {
+        std::cout << s << '\n';
+    }
+>>>>>>> be47681 (Changes)
 	
     do {
         l = tokens.front();

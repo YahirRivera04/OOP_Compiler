@@ -12,10 +12,13 @@ public:
     string nombre;
 
 
-    Animal(string ) {
+    Animal(string n) {
 
         nombre = n;
     }
+
+
+
 
     ~Animal() {}
 

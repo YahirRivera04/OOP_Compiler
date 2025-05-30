@@ -1,0 +1,13 @@
+
+
+int factorial(int n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+int main() {
+    int num = 5;
+    int result = factorial(num);
+    printf("Factorial: %d\n", result);
+    return 0;
+}
