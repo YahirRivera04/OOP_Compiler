@@ -46,10 +46,6 @@ void handler(char* argv[]) {
     string line;
     vector<string> lista;
 
-<<<<<<< HEAD
-=======
-    string fileName = "ejemplo.cpp";
->>>>>>> f8ccf8a714a3ce99dc816003a5c0f54bb622f3e9
     Token objectT;
     //ifstream file(fileName);
 
@@ -148,13 +144,6 @@ bool declaracion2();
 
 const std::string& la2();
 
-<<<<<<< HEAD
-void error(){
-	cout << "Error" << endl;
-	exit(-1);
-}
-=======
->>>>>>> f8ccf8a714a3ce99dc816003a5c0f54bb622f3e9
 
 
 // Match function
